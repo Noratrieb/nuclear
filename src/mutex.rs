@@ -34,10 +34,12 @@ impl<T> Mutex<T> {
         // don't use spin loops
         // but I can't be bothered with the proper solution
         loop {
-            if self
-                .status
-                .compare_exchange(INIT, ACQUIRED, Ordering::Acquire, Ordering::Relaxed)
-            {
+            if self.status.compare_exchange_weak(
+                INIT,
+                ACQUIRED,
+                Ordering::Acquire,
+                Ordering::Relaxed,
+            ) {
                 return MutexGuard { mutex: self };
             } else {
                 std::hint::spin_loop();
