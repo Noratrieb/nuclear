@@ -1,1 +1,2 @@
-compile_error!("lol");
+mod linked_list;
+mod mutex;
