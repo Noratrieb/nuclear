@@ -28,6 +28,22 @@ impl<T> Mutex<T> {
             None
         }
     }
+
+    pub fn lock(&self) -> MutexGuard<'_, T> {
+        // hahahahahahahaha a spin loop :D
+        // don't use spin loops
+        // but I can't be bothered with the proper solution
+        loop {
+            if self
+                .status
+                .compare_exchange(INIT, ACQUIRED, Ordering::Acquire, Ordering::Relaxed)
+            {
+                return MutexGuard { mutex: self };
+            } else {
+                std::hint::spin_loop();
+            }
+        }
+    }
 }
 
 pub struct MutexGuard<'a, T> {
