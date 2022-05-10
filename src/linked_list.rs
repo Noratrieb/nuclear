@@ -1,5 +1,4 @@
-use std::ptr;
-use std::sync::atomic::AtomicPtr;
+use std::{ptr, sync::atomic::AtomicPtr};
 
 pub struct LinkedList<T> {
     head: AtomicPtr<Node<T>>,

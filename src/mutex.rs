@@ -1,6 +1,8 @@
-use std::cell::UnsafeCell;
-use std::ops::{Deref, DerefMut};
-use std::sync::atomic::{AtomicU8, Ordering};
+use std::{
+    cell::UnsafeCell,
+    ops::{Deref, DerefMut},
+    sync::atomic::{AtomicU8, Ordering},
+};
 
 const INIT: u8 = 0;
 const ACQUIRED: u8 = 1;
