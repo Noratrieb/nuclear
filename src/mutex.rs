@@ -13,7 +13,7 @@ struct Mutex<T> {
 impl<T> Mutex<T> {
     pub fn new(value: T) -> Self {
         Self {
-            value,
+            value: UnsafeCell::new(value),
             status: AtomicU8::new(INIT),
         }
     }
@@ -22,6 +22,7 @@ impl<T> Mutex<T> {
         if self
             .status
             .compare_exchange(INIT, ACQUIRED, Ordering::Acquire, Ordering::Relaxed)
+            .is_ok()
         {
             Some(MutexGuard { mutex: self })
         } else {
@@ -34,12 +35,11 @@ impl<T> Mutex<T> {
         // don't use spin loops
         // but I can't be bothered with the proper solution
         loop {
-            if self.status.compare_exchange_weak(
-                INIT,
-                ACQUIRED,
-                Ordering::Acquire,
-                Ordering::Relaxed,
-            ) {
+            if self
+                .status
+                .compare_exchange_weak(INIT, ACQUIRED, Ordering::Acquire, Ordering::Relaxed)
+                .is_ok()
+            {
                 return MutexGuard { mutex: self };
             } else {
                 std::hint::spin_loop();
